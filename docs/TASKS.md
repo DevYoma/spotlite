@@ -15,7 +15,7 @@ Build a platform that allows users to:
 
 ---
 
-# Phase 1 — Foundation
+# Phase 1 — Foundation [COMPLETED]
 
 ## Goal
 
@@ -41,7 +41,7 @@ Set up the application architecture and development environment.
 
 ---
 
-# Phase 2 — Database & Core Models
+# Phase 2 — Database & Core Models [COMPLETED]
 
 ## Goal
 
