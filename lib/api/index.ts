@@ -2,6 +2,8 @@ import Elysia from "elysia";
 import { cors } from "@elysiajs/cors";
 import { db } from "@/lib/db";
 import { sql } from "drizzle-orm";
+import { projectRoutes } from "./modules/projects/routes";
+import { authRoutes } from "./modules/auth/routes";
 
 export const app = new Elysia({ prefix: "/api" })
   .use(cors())
@@ -13,6 +15,8 @@ export const app = new Elysia({ prefix: "/api" })
     } catch (err: any) {
       return { status: "error", database: err.message || "Failed to connect" };
     }
-  });
+  })
+  .use(authRoutes)
+  .use(projectRoutes);
 
 export type App = typeof app;

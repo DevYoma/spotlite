@@ -1,6 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import Providers from "./providers";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -32,7 +34,8 @@ export default function RootLayout({
         <body
           className={`${plusJakartaSans.variable} ${inter.variable} antialiased`}
         >
-          {children}
+          <Providers>{children}</Providers>
+          <Toaster richColors position="top-right" />
         </body>
       </html>
     </ClerkProvider>
