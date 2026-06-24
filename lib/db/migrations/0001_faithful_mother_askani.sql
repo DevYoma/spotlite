@@ -1,0 +1,1 @@
+ALTER TABLE "forms" ADD COLUMN "linked_template_id" uuid;

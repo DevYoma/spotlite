@@ -45,3 +45,20 @@ export function useDeleteSubmissionMutation() {
     },
   });
 }
+
+export function useSubmissionQuery(projectId: string, formId: string, submissionId: string) {
+  return useQuery<SubmissionResponse>({
+    queryKey: ["projects", projectId, "forms", formId, "submissions", submissionId],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/projects/${projectId}/forms/${formId}/submissions/${submissionId}`
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch submission details");
+      }
+      return res.json();
+    },
+    enabled: !!projectId && !!formId && !!submissionId,
+  });
+}
+

@@ -25,8 +25,10 @@ export const forms = pgTable("forms", {
   name: text("name").notNull(),
   title: text("title").notNull(),
   schemaJson: jsonb("schema_json").notNull(),
+  linkedTemplateId: uuid("linked_template_id"), // optional pre-linked template for graphic generation
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
 
 export const submissions = pgTable("submissions", {
   id: uuid("id").defaultRandom().primaryKey(),

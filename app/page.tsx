@@ -120,6 +120,21 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="max-w-[1280px] mx-auto px-4 md:px-8 border-t border-zinc-200/40 dark:border-zinc-805/45 py-8 text-center text-xs text-text-secondary-light dark:text-text-secondary-dark mt-12">
+        <p>
+          Built by{" "}
+          <a
+            href="https://me-teal-xi.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-brand-primary hover:text-brand-primary/80 transition-colors"
+          >
+            Ogheneyoma
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

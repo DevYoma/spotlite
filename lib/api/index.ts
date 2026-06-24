@@ -5,7 +5,9 @@ import { sql } from "drizzle-orm";
 import { projectRoutes } from "./modules/projects/routes";
 import { authRoutes } from "./modules/auth/routes";
 import { formRoutes, publicFormRoutes } from "./modules/forms/routes";
+import { templateRoutes } from "./modules/templates/routes";
 import { submissionRoutes, submissionManagementRoutes } from "./modules/submissions/routes";
+import { imageGenerationRoutes } from "./modules/image-generation/routes";
 
 export const app = new Elysia({ prefix: "/api" })
   .use(cors())
@@ -23,6 +25,8 @@ export const app = new Elysia({ prefix: "/api" })
   .use(formRoutes)
   .use(publicFormRoutes)
   .use(submissionRoutes)
-  .use(submissionManagementRoutes);
+  .use(submissionManagementRoutes)
+  .use(templateRoutes)
+  .use(imageGenerationRoutes);
 
 export type App = typeof app;

@@ -61,6 +61,21 @@ export const submissionManagementRoutes = new Elysia({ prefix: "/projects/:id/fo
       return { error: err.message };
     }
   })
+  .get("/:submissionId", async ({ user, params: { id, formId, submissionId }, set }) => {
+    try {
+      await getSubmissionsForForm(user!.id, id, formId); // verifies ownership
+      const all = await getSubmissionsForForm(user!.id, id, formId);
+      const submission = all.find((s) => s.id === submissionId);
+      if (!submission) {
+        set.status = 404;
+        return { error: "Submission not found" };
+      }
+      return submission;
+    } catch (err: any) {
+      set.status = err.message.includes("not found") ? 404 : 500;
+      return { error: err.message };
+    }
+  })
   .delete("/:submissionId", async ({ user, params: { id, formId, submissionId }, set }) => {
     try {
       return await deleteSubmission(user!.id, id, formId, submissionId);

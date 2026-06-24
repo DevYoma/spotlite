@@ -132,7 +132,7 @@ Collect information from external users.
 
 ---
 
-# Phase 6 — Submission Management
+# Phase 6 — Submission Management [COMPLETED]
 
 ## Goal
 

@@ -13,5 +13,7 @@ export interface FormResponse {
   schemaJson: {
     fields: FormField[];
   };
+  linkedTemplateId: string | null;
   createdAt: Date;
 }
+

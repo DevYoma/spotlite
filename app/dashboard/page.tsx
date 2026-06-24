@@ -21,6 +21,10 @@ export default function DashboardPage() {
   const { data: projects, isLoading, isError } = useProjectsQuery();
   const deleteMutation = useDeleteProjectMutation();
 
+  // Custom modal delete confirmation state
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
+
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-bg-light dark:bg-bg-dark transition-colors duration-300 flex flex-col">
@@ -68,16 +72,23 @@ export default function DashboardPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteClick = async (id: string, name: string, e: React.MouseEvent) => {
+  const handleDeleteClick = (id: string, name: string, e: React.MouseEvent) => {
     e.stopPropagation(); // prevent navigation
-    if (confirm(`Are you sure you want to delete the project "${name}"? This action cannot be undone.`)) {
-      try {
-        await deleteMutation.mutateAsync(id);
-        toast.success(`Project "${name}" deleted successfully`);
-      } catch (err: any) {
-        toast.error(err.message || "Failed to delete project");
-        console.error("Failed to delete project:", err);
-      }
+    setDeleteConfirmName("");
+    setProjectToDelete({ id, name });
+  };
+
+  const handleConfirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(projectToDelete.id);
+      toast.success(`Project "${projectToDelete.name}" deleted successfully`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete project");
+      console.error("Failed to delete project:", err);
+    } finally {
+      setProjectToDelete(null);
+      setDeleteConfirmName("");
     }
   };
 
@@ -214,6 +225,52 @@ export default function DashboardPage() {
         onClose={() => setIsDialogOpen(false)}
         projectToEdit={projectToEdit}
       />
+
+      {/* Custom Confirmation Modal */}
+      {projectToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-surface-dark border border-zinc-200/60 dark:border-zinc-800/80 rounded-card shadow-lg p-6 max-w-sm w-full mx-4 space-y-6">
+            <div className="space-y-3 text-left">
+              <h3 className="font-heading font-bold text-lg text-text-primary-light dark:text-text-primary-dark">
+                Delete Project
+              </h3>
+              <p className="text-xs text-text-secondary-light dark:text-text-secondary-dark leading-relaxed">
+                This will permanently delete all forms, templates, and submissions in <strong className="text-brand-primary font-semibold">"{projectToDelete.name}"</strong>. This action cannot be undone.
+              </p>
+              <div className="space-y-1.5 pt-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-text-muted-light block">
+                  Type the project name to confirm:
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmName}
+                  onChange={(e) => setDeleteConfirmName(e.target.value)}
+                  placeholder={projectToDelete.name}
+                  className="w-full px-3 py-2 text-sm rounded-input border border-zinc-200 dark:border-zinc-800 bg-zinc-55/20 dark:bg-zinc-900 text-text-primary-light dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => {
+                  setProjectToDelete(null);
+                  setDeleteConfirmName("");
+                }}
+                className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-button text-xs font-semibold text-text-secondary-light dark:text-text-secondary-dark cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDeleteProject}
+                disabled={deleteMutation.isPending || deleteConfirmName !== projectToDelete.name}
+                className="px-4 py-2 bg-red-500 hover:bg-red-650 hover:bg-red-600 active:scale-98 text-white rounded-button text-xs font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Confirm Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

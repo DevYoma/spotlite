@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { createSubmissionDb, getSubmissionsByFormDb, deleteSubmissionDb } from "./repository";
+import { createSubmissionDb, getSubmissionsByFormDb, deleteSubmissionDb, getSubmissionByIdDb } from "./repository";
 import { getFormByIdPublic, getFormById } from "../forms/service";
 import { SubmissionInput } from "./types";
 
@@ -90,4 +90,10 @@ export async function deleteSubmission(
   // Verify ownership of the parent project and existence of the form template
   await getFormById(formId, projectId, ownerId);
   return await deleteSubmissionDb(submissionId);
+}
+
+export async function getSubmissionById(submissionId: string) {
+  const submission = await getSubmissionByIdDb(submissionId);
+  if (!submission) throw new Error("Submission not found");
+  return submission;
 }
