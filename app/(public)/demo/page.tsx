@@ -442,9 +442,9 @@ export default function DemoPage() {
               className="w-full h-auto max-w-[480px] border border-zinc-200 dark:border-zinc-800 rounded-card bg-zinc-950 shadow-md transition-all duration-300"
             />
 
-            <span className="text-[11px] text-text-muted-light">
+            {/* <span className="text-[11px] text-text-muted-light">
               * The canvas output above is exactly 1080×1080px (Instagram post ratio) for high-res downloads.
-            </span>
+            </span> */}
           </div>
         </div>
       </main>
