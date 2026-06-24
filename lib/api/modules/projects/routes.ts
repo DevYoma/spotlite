@@ -1,53 +1,52 @@
 import Elysia from "elysia";
 import { getOrCreateUser } from "../auth/service";
-import { ProjectService } from "./service";
+import {
+  createProject,
+  getProjectsByOwner,
+  getProjectById,
+  updateProject,
+  deleteProject,
+} from "./service";
 import { createProjectSchema, updateProjectSchema } from "./schema";
 
 export const projectRoutes = new Elysia({ prefix: "/projects" })
-  .get("/", async ({ set }) => {
+  // 1. Derive user once for all routes in this chain
+  .derive(async () => {
     const user = await getOrCreateUser();
-    if (!user) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
-    return await ProjectService.getProjectsByOwner(user.id);
+    return { user };
   })
-  .post("/", async ({ body, set }) => {
-    const user = await getOrCreateUser();
+  // 2. Add an inline guard hook to verify authentication
+  .onBeforeHandle(({ user, set }) => {
     if (!user) {
       set.status = 401;
       return { error: "Unauthorized" };
     }
+  })
+  // 3. Keep handlers completely thin and clean
+  .get("/", async ({ user }) => {
+    return await getProjectsByOwner(user!.id);
+  })
+  .post("/", async ({ user, body, set }) => {
     try {
       const validatedBody = createProjectSchema.parse(body);
-      return await ProjectService.createProject(user.id, validatedBody);
+      return await createProject(user!.id, validatedBody);
     } catch (err: any) {
       set.status = 400;
       return { error: err.errors || err.message };
     }
   })
-  .get("/:id", async ({ params: { id }, set }) => {
-    const user = await getOrCreateUser();
-    if (!user) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
+  .get("/:id", async ({ user, params: { id }, set }) => {
     try {
-      return await ProjectService.getProjectById(id, user.id);
+      return await getProjectById(id, user!.id);
     } catch (err: any) {
       set.status = 404;
       return { error: err.message };
     }
   })
-  .put("/:id", async ({ params: { id }, body, set }) => {
-    const user = await getOrCreateUser();
-    if (!user) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
+  .put("/:id", async ({ user, params: { id }, body, set }) => {
     try {
       const validatedBody = updateProjectSchema.parse(body);
-      return await ProjectService.updateProject(id, user.id, validatedBody);
+      return await updateProject(id, user!.id, validatedBody);
     } catch (err: any) {
       if (err.message === "Project not found") {
         set.status = 404;
@@ -57,14 +56,9 @@ export const projectRoutes = new Elysia({ prefix: "/projects" })
       return { error: err.errors || err.message };
     }
   })
-  .delete("/:id", async ({ params: { id }, set }) => {
-    const user = await getOrCreateUser();
-    if (!user) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
+  .delete("/:id", async ({ user, params: { id }, set }) => {
     try {
-      return await ProjectService.deleteProject(id, user.id);
+      return await deleteProject(id, user!.id);
     } catch (err: any) {
       set.status = 404;
       return { error: err.message };

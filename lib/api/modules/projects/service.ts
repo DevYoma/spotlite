@@ -1,32 +1,36 @@
-import { ProjectRepository } from "./repository";
+import {
+  createProjectDb,
+  getProjectsByOwnerDb,
+  getProjectByIdDb,
+  updateProjectDb,
+  deleteProjectDb,
+} from "./repository";
 import { CreateProjectInput, UpdateProjectInput } from "./types";
 
-export class ProjectService {
-  static async createProject(ownerId: string, input: CreateProjectInput) {
-    return await ProjectRepository.create(ownerId, input);
-  }
+export async function createProject(ownerId: string, input: CreateProjectInput) {
+  return await createProjectDb(ownerId, input);
+}
 
-  static async getProjectsByOwner(ownerId: string) {
-    return await ProjectRepository.findByOwner(ownerId);
-  }
+export async function getProjectsByOwner(ownerId: string) {
+  return await getProjectsByOwnerDb(ownerId);
+}
 
-  static async getProjectById(id: string, ownerId: string) {
-    const project = await ProjectRepository.findById(id, ownerId);
-    if (!project) {
-      throw new Error("Project not found");
-    }
-    return project;
+export async function getProjectById(id: string, ownerId: string) {
+  const project = await getProjectByIdDb(id, ownerId);
+  if (!project) {
+    throw new Error("Project not found");
   }
+  return project;
+}
 
-  static async updateProject(id: string, ownerId: string, input: UpdateProjectInput) {
-    // Verify ownership and existence first
-    await this.getProjectById(id, ownerId);
-    return await ProjectRepository.update(id, ownerId, input);
-  }
+export async function updateProject(id: string, ownerId: string, input: UpdateProjectInput) {
+  // Verify ownership and existence first
+  await getProjectById(id, ownerId);
+  return await updateProjectDb(id, ownerId, input);
+}
 
-  static async deleteProject(id: string, ownerId: string) {
-    // Verify ownership and existence first
-    await this.getProjectById(id, ownerId);
-    return await ProjectRepository.delete(id, ownerId);
-  }
+export async function deleteProject(id: string, ownerId: string) {
+  // Verify ownership and existence first
+  await getProjectById(id, ownerId);
+  return await deleteProjectDb(id, ownerId);
 }
