@@ -1,4 +1,4 @@
-import sharp, { type OverlayOptions } from "sharp";
+import type { OverlayOptions } from "sharp";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getTemplateById } from "../templates/service";
 import { getSubmissionById } from "../submissions/service";
@@ -122,6 +122,7 @@ export async function generateGraphic(
   submissionId: string,
   templateId: string
 ) {
+  const { default: sharp } = await import("sharp");
   // 1. Verify ownership
   await getProjectById(projectId, ownerId);
 
